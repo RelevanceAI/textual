@@ -78,6 +78,7 @@ struct WithInlineStyle<Content: View>: View {
       output[run.range].mergeAttributes(attributes, mergePolicy: .keepNew)
     }
 
+    guard self.output != output else { return }
     self.output = output
   }
 }
