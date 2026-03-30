@@ -22,6 +22,7 @@ extension TextFragment {
 
     @ObservationIgnored private let content: Content
     @ObservationIgnored private let cache: NSCache<KeyBox<[AttachmentKey: CGSize]>, Box<Text>>
+    @ObservationIgnored private var currentAttachmentSizes: [AttachmentKey: CGSize]
 
     init(_ content: Content, environment: TextEnvironmentValues) {
       let attachmentSizes = content.attachmentSizes(for: .unspecified, in: environment)
@@ -35,11 +36,18 @@ extension TextFragment {
       self.cache = NSCache()
       self.cache.countLimit = 10
 
+      self.currentAttachmentSizes = attachmentSizes
+
       self.cache.setObject(Box(self.text), forKey: KeyBox(attachmentSizes))
     }
 
     func sizeChanged(_ size: CGSize, environment: TextEnvironmentValues) {
       let attachmentSizes = content.attachmentSizes(for: .init(size), in: environment)
+
+      // Skip if attachment sizes haven't changed — avoids redundant Observable mutations during scroll
+      guard attachmentSizes != currentAttachmentSizes else { return }
+      currentAttachmentSizes = attachmentSizes
+
       let cacheKey = KeyBox(attachmentSizes)
 
       if let text = cache.object(forKey: cacheKey) {
@@ -88,7 +96,7 @@ extension Text {
         text = Text(AttributedString(attributedString[run.range]))
       }
 
-      // Add link attribute for TextLinkInteraction
+      // Add link attribute for TextFragmentOverlay link interaction
       if let link = run.link {
         text = text.customAttribute(LinkAttribute(link))
       }
