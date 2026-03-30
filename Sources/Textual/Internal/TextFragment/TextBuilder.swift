@@ -96,7 +96,7 @@ extension Text {
         text = Text(AttributedString(attributedString[run.range]))
       }
 
-      // Add link attribute for TextLinkInteraction
+      // Add link attribute for TextFragmentOverlay link interaction
       if let link = run.link {
         text = text.customAttribute(LinkAttribute(link))
       }

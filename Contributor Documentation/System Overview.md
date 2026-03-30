@@ -68,10 +68,11 @@ This stage must happen before SwiftUI resolves geometry, so attachments receive 
 ### Overlaying
 
 After SwiftUI resolves `Text.Layout`, modifiers applied at the fragment level use this geometry
-to render overlays. `AttachmentOverlay` positions attachment views at their run locations.
-`TextLinkInteraction` handles taps on URLs. Links are re-attached while building `Text` so the
-resolved layout can be used for hit testing. Text selection is supported on macOS, iOS, and
-visionOS; tvOS and watchOS don't provide a selection experience.
+to render overlays. `TextFragmentOverlay` combines attachment rendering and link interaction
+into a single overlay modifier, reading `Text.Layout` once to position attachment views at
+their run locations and handle taps on URLs. Links are re-attached while building `Text` so
+the resolved layout can be used for hit testing. Text selection is supported on macOS, iOS,
+and visionOS; tvOS and watchOS don't provide a selection experience.
 
 Text selection captures `Text.Layout` geometry and handles gestures through platform-native views.
 To keep code blocks with scrollable overflow interactive, these blocks emit their frames via
